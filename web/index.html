@@ -2,18 +2,44 @@
 <head>
 <meta charset="utf-8">
 <script>
-function lights(state) {
-  url = 'http://' + document.location.hostname + ':' + document.location.port + '/cgi-bin/xmas-lights-' + state + '.py';
+function sockets(state) {
+  url = 'http://' + document.location.hostname + ':' + document.location.port + '/cgi-bin/sockets-' + state + '.py';
   console.log(url);
   fetch(new Request(url));
 }
+
+function take_photo() {
+  url = 'http://' + document.location.hostname + ':' + document.location.port + '/cgi-bin/take-photo.sh';
+  console.log(url);
+  var img = document.querySelector('img');
+  img.src = '';
+  fetch(new Request(url)).then(function(response) {
+    console.log(response);
+  }).then(function() {
+    img.src = 'image.jpg?' + (new Date()).getTime(); 
+  });
+}
 </script>
+<style>
+div {
+  padding: 5px;
+  position: absolute;
+  top: 0px;
+  color: #0000FF;
+  padding-top: 10px;
+}
+button {
+  opacity: 0.5;
+}
+</style>
 </head>
 <body>
-<h1>Christmas Tree Lights</h1>
-<p>
-<button onclick="lights('on')">On</button>
-<button onclick="lights('off')">Off</button>
-</p>
+	<img src="image.jpg" />
+	<div>
+		<button onclick="sockets('on')">On</button>
+		<button onclick="sockets('off')">Off</button>
+
+		<button onclick="take_photo()">Take photo</button>
+	</div>
 </body>
 </html>
