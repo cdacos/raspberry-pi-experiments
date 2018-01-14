@@ -28,3 +28,7 @@ all sockets on (1011) and off (0011)
 sudo python energie.py 10110011
 ```
 
+AM2302 (DHT22)
+
+Requires https://github.com/adafruit/Adafruit_Python_DHT
+

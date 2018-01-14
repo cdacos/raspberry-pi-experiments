@@ -2,8 +2,23 @@
 <head>
 <meta charset="utf-8">
 <script>
-function sockets(state) {
-  url = 'http://' + document.location.hostname + ':' + document.location.port + '/cgi-bin/sockets-' + state + '.py';
+function dht() {
+  url = 'http://' + document.location.hostname + ':' + document.location.port + '/cgi-bin/dht.py';
+  console.log(url);
+  var e = document.querySelector('#dht');
+  fetch(new Request(url)).then(function(response) {
+    response.text().then(function(text) {
+      e.innerHTML = text;
+      t = document.querySelector('#time');
+      d = new Date(Date.now());
+      t.innerHTML = d.toLocaleTimeString();
+      setInterval(dht, 30000);
+    });
+  });
+}
+
+function energie(state) {
+  url = 'http://' + document.location.hostname + ':' + document.location.port + '/cgi-bin/energie.py?msg=' + state;
   console.log(url);
   fetch(new Request(url));
 }
@@ -21,25 +36,53 @@ function take_photo() {
 }
 </script>
 <style>
+body {
+  font-family: sans-serif !important;
+}
 div {
   padding: 5px;
   position: absolute;
   top: 0px;
-  color: #0000FF;
+  color: #000000;
   padding-top: 10px;
+  left: 300px;
 }
 button {
-  opacity: 0.5;
+  opacity: 0.75;
+}
+span {
+  color: #000000;
+  background-color: #DDDDDD;
+  padding: 3px;
+  line-height: 17px;
+  display: inline-block;
+  box-sizing: border-box;
+  opacity: 0.75;
+}
+b {
+  padding: 10px;
 }
 </style>
 </head>
 <body>
 	<img src="image.jpg" />
 	<div>
-		<button onclick="sockets('on')">On</button>
-		<button onclick="sockets('off')">Off</button>
-
+     	 	<span>Light:</span>
+		<button onclick="energie('1111')">On</button>
+		<button onclick="energie('0111')">Off</button>
+		<b></b>
+		<span>Heat:</span>
+		<button onclick="energie('1110')">On</button>
+		<button onclick="energie('0110')">Off</button>
+		<b></b>
 		<button onclick="take_photo()">Take photo</button>
+		<b></b>
+		<span id="dht"></span>
+		<b></b>
+		<span id="time"></span>
 	</div>
+	<script>
+		dht();
+	</script>
 </body>
 </html>
