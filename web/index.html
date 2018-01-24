@@ -6,13 +6,14 @@ function dht() {
   url = 'http://' + document.location.hostname + ':' + document.location.port + '/cgi-bin/dht.py';
   console.log(url);
   var e = document.querySelector('#dht');
+  e.innerHTML = '';
+  var t = document.querySelector('#time');
+  t.innerHTML = '';
   fetch(new Request(url)).then(function(response) {
     response.text().then(function(text) {
       e.innerHTML = text;
-      t = document.querySelector('#time');
       d = new Date(Date.now());
       t.innerHTML = d.toLocaleTimeString();
-      setInterval(dht, 30000);
     });
   });
 }
@@ -45,7 +46,7 @@ div {
   top: 0px;
   color: #000000;
   padding-top: 10px;
-  left: 300px;
+  left: 200px;
 }
 button {
   opacity: 0.75;
@@ -80,6 +81,8 @@ b {
 		<span id="dht"></span>
 		<b></b>
 		<span id="time"></span>
+		<b></b>
+		<button onclick="dht()">@</button>
 	</div>
 	<script>
 		dht();
