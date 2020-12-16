@@ -1,3 +1,23 @@
+# 2020 Notes
+
+https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi
+
+```
+sudo adduser carlos gpio
+sudo adduser carlos i2c
+sudo adduser carlos spi
+```
+
+```
+source .venv/bin/activate
+python blinkatest.py
+
+gunicorn --bind 0.0.0.0:5000 web:app
+```
+
+---
+# 2018 Notes
+
 Reset GPIO
 
 ```

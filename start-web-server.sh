@@ -1,4 +1,3 @@
 #!/bin/bash
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-pushd "$DIR/web"
-python3 -m http.server --cgi 8000
+source .venv/bin/activate
+gunicorn --bind 0.0.0.0:5000 web:app

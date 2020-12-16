@@ -1,0 +1,17 @@
+# sudo ln -s /home/carlos/raspberry-pi-experiments/raspberry-pi-experiments-web.service /etc/systemd/system/raspberry-pi-experiments-web.service
+# sudo systemctl enable raspberry-pi-experiments-web
+# sudo systemctl start raspberry-pi-experiments-web
+
+[Unit]
+Description=Gunicorn instance raspberry-pi-experiments
+After=network.target
+
+[Service]
+User=carlos
+Group=www-data
+WorkingDirectory=/home/carlos/raspberry-pi-experiments
+Environment="PATH=/home/carlos/raspberry-pi-experiments/.venv/bin"
+ExecStart=/home/carlos/raspberry-pi-experiments/.venv/bin/gunicorn --workers 1 --bind 0.0.0.0:5000 --reload web:app
+
+[Install]
+WantedBy=multi-user.target
