@@ -1,0 +1,14 @@
+# sudo ln -s /home/carlos/raspberry-pi-experiments/raspberry-pi-experiments-timer.timer /etc/systemd/system/raspberry-pi-experiments-timer.timer
+# sudo systemctl enable raspberry-pi-experiments-timer.timer
+# sudo systemctl start raspberry-pi-experiments-timer.timer
+
+[Unit]
+Description=Timer for raspberry-pi-experiments
+
+[Timer]
+AccuracySec=1s
+OnCalendar=*:0/1
+Unit=raspberry-pi-experiments-timer.service
+
+[Install]
+WantedBy=timers.target

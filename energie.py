@@ -4,9 +4,7 @@ import RPi.GPIO as GPIO
 import time
 import sys
 
-print("Content-Type: text/plain\n")
-
-GPIO.setmode(GPIO.BOARD)# set the pins numbering mode
+GPIO.setmode(GPIO.BOARD) # set the pins numbering mode
 
 # Select the GPIO pins used for the encoder K0-K3 data inputs
 GPIO.setup(11, GPIO.OUT)
@@ -22,14 +20,19 @@ GPIO.output (22, False)  # Disable the modulator by setting CE pin lo
 # Set the modulator to ASK for On Off Keying by setting MODSEL pin lo
 GPIO.output (18, False)
 
+# Light on:  1111
+# Light off: 0111
+# Heat on:   1110
+# Heat off:  0110
+
 arg = sys.argv[1]
 
 bits = []
 
 for char in arg:
   bits.append(char == "1")
- 
-loops = len(bits) / 4
+
+loops = int(len(bits) / 4)
 
 if loops >= 0:
   for i in range(loops):
@@ -47,5 +50,3 @@ if loops >= 0:
     GPIO.output (22, False) # Disable the modulator
 
 GPIO.cleanup()
-
-print("OK")

@@ -1,0 +1,17 @@
+# sudo ln -s /home/carlos/raspberry-pi-experiments/raspberry-pi-experiments-timer.service /etc/systemd/system/raspberry-pi-experiments-timer.service
+# sudo systemctl enable raspberry-pi-experiments-timer
+# sudo systemctl start raspberry-pi-experiments-timer
+
+[Unit]
+Description=Timer target for raspberry-pi-experiments
+Wants=raspberry-pi-experiments-timer.timer
+
+[Service]
+User=carlos
+Group=www-data
+WorkingDirectory=/home/carlos/raspberry-pi-experiments
+Environment="PATH=/home/carlos/raspberry-pi-experiments/.venv/bin"
+ExecStart=/home/carlos/raspberry-pi-experiments/.venv/bin/python timer.py
+
+[Install]
+WantedBy=multi-user.target
