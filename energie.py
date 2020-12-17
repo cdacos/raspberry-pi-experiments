@@ -1,52 +1,65 @@
-#!/usr/bin/env python
-
 import RPi.GPIO as GPIO
 import time
 import sys
 
-GPIO.setmode(GPIO.BOARD) # set the pins numbering mode
+def energie(address):
+  '''Signal the Energie devices based on 4-bit address:
+  Light on:  1111
+  Light off: 0111
+  Heat on:   1110
+  Heat off:  0110
+  '''
+  # [BOARD, BCM (GPIO)]
+  pins = [[11, 17], [13, 27], [15, 22], [16, 23], [18, 24], [22, 25]]
+  BOARD = 0
+  BCM = 1
 
-# Select the GPIO pins used for the encoder K0-K3 data inputs
-GPIO.setup(11, GPIO.OUT)
-GPIO.setup(15, GPIO.OUT)
-GPIO.setup(16, GPIO.OUT)
-GPIO.setup(13, GPIO.OUT)
+  # set the pins numbering mode
+  mode = GPIO.getmode()
+  if not mode or mode == GPIO.BOARD:
+    GPIO.setmode(GPIO.BOARD)
+    mode = BOARD
+  elif mode == GPIO.BCM:
+    mode = BCM
+  else:
+    print('Uknown mode: ', mode)
+    exit(1)
 
-GPIO.setup(18, GPIO.OUT) # Select the signal to select ASK/FSK
-GPIO.setup(22, GPIO.OUT) # Select the signal used to enable/disable the modulator
+  # Select the GPIO pins used for the encoder K0-K3 data inputs
+  GPIO.setup(pins[0][mode], GPIO.OUT) # 11
+  GPIO.setup(pins[2][mode], GPIO.OUT) # 15
+  GPIO.setup(pins[3][mode], GPIO.OUT) # 16
+  GPIO.setup(pins[1][mode], GPIO.OUT) # 13
 
-GPIO.output (22, False)  # Disable the modulator by setting CE pin lo
+  GPIO.setup(pins[4][mode], GPIO.OUT) # 18 - Select the signal to select ASK/FSK
+  GPIO.setup(pins[5][mode], GPIO.OUT) # 22 - Select the signal used to enable/disable the modulator
 
-# Set the modulator to ASK for On Off Keying by setting MODSEL pin lo
-GPIO.output (18, False)
+  GPIO.output(pins[5][mode], False)  # 22 - Disable the modulator by setting CE pin lo
 
-# Light on:  1111
-# Light off: 0111
-# Heat on:   1110
-# Heat off:  0110
+  # Set the modulator to ASK for On Off Keying by setting MODSEL pin lo
+  GPIO.output(pins[4][mode], False) # 18
 
-arg = sys.argv[1]
+  bits = []
+  for char in address:
+    bits.append(char == "1")
 
-bits = []
+  loops = int(len(bits) / 4)
 
-for char in arg:
-  bits.append(char == "1")
+  if loops >= 0:
+    for i in range(loops):
+      print(i, bits[4*i : 4*i + 4])
 
-loops = int(len(bits) / 4)
+      # Set K0-K3
+      GPIO.output(pins[0][mode], bits[4*i + 3])
+      GPIO.output(pins[2][mode], bits[4*i + 2])
+      GPIO.output(pins[3][mode], bits[4*i + 1])
+      GPIO.output(pins[1][mode], bits[4*i + 0])
 
-if loops >= 0:
-  for i in range(loops):
-    print(i, bits[4*i : 4*i + 4])
+      time.sleep(0.1)         # let it settle, encoder requires this
+      GPIO.output(pins[5][mode], True)  # 22 - Enable the modulator
+      time.sleep(0.25)        # keep enabled for a period
+      GPIO.output(pins[5][mode], False) # 22 - Disable the modulator
 
-    # Set K0-K3
-    GPIO.output (11, bits[4*i + 3])
-    GPIO.output (15, bits[4*i + 2])
-    GPIO.output (16, bits[4*i + 1])
-    GPIO.output (13, bits[4*i + 0])
-
-    time.sleep(0.1)         # let it settle, encoder requires this
-    GPIO.output (22, True)  # Enable the modulator
-    time.sleep(0.25)        # keep enabled for a period
-    GPIO.output (22, False) # Disable the modulator
-
-GPIO.cleanup()
+if __name__ == "__main__":
+  energie(sys.argv[1])
+  GPIO.cleanup()
