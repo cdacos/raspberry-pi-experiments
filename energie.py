@@ -4,6 +4,8 @@ import sys
 import datetime
 import sqlite3
 
+import utils
+
 def message(address, conn):
   now = datetime.datetime.utcnow().isoformat()
   conn.execute('INSERT INTO energie (messaged_on, address) VALUES(?, ?)', (now, address))
@@ -69,8 +71,7 @@ def __energie(address):
       GPIO.output(pins[5][mode], False) # 22 - Disable the modulator
 
 if __name__ == "__main__":
-  dbpath = '/var/log/raspberry-pi-experiments/data.db'
-  conn = sqlite3.connect(dbpath)
+  conn = utils.get_conn()
   message(sys.argv[1], conn)
   conn.close()
   GPIO.cleanup()

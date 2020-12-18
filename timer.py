@@ -2,10 +2,9 @@ import datetime
 import time
 import board
 import adafruit_dht
-import sqlite3
-import os.path
 
 import energie
+import utils
 
 temperature = -999
 humidity = -999
@@ -27,15 +26,7 @@ for i in range(0, 30):
 
 now = datetime.datetime.utcnow().isoformat()
 
-dbpath = '/var/log/raspberry-pi-experiments/data.db'
-initialised = os.path.isfile(dbpath)
-
-conn = sqlite3.connect(dbpath)
-
-if not initialised:
-  conn.execute('CREATE TABLE climate (id INTEGER PRIMARY KEY AUTOINCREMENT, measured_on DATETIME, temperature FLOAT, humidity FLOAT)')
-  conn.execute('CREATE TABLE energie (id INTEGER PRIMARY KEY AUTOINCREMENT, messaged_on DATETIME, address TEXT)')
-
+conn = utils.get_conn()
 conn.execute('INSERT INTO climate (measured_on, temperature, humidity) VALUES(?, ?, ?)', (now, temperature, humidity))
 conn.commit()
 
