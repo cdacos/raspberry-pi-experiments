@@ -68,6 +68,6 @@ sudo journalctl -u raspberry-pi-experiments-web -f
 
 Note: The mapping of BCM to BOARD pin references was thanks to this great site: https://pinout.xyz/
 
-The Adafruit Python library set's the GPIO mode to BCM and it's not possible to change the mode once set in a process. So I've updated the Energenie Pi-mote code to support both.
+The Adafruit Python library sets the GPIO mode to BCM and it's not possible to change the mode once set in a process. The Energenie Pi-mote's code has been updated to support both.
 
 ![GPIO](docs/gpio.jpg)
