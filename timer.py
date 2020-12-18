@@ -30,7 +30,7 @@ conn = utils.get_conn()
 conn.execute('INSERT INTO climate (measured_on, temperature, humidity) VALUES(?, ?, ?)', (now, temperature, humidity))
 conn.commit()
 
-if temperature > 22:
+if temperature > 24:
   print('Warm, so heater off!', temperature)
   energie.message('0110', conn)
 

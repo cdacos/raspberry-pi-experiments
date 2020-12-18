@@ -15,6 +15,10 @@ python blinkatest.py
 gunicorn --bind 0.0.0.0:5000 web:app
 ```
 
+```
+sudo journalctl -u raspberry-pi-experiments-web -f
+```
+
 ---
 # 2018 Notes
 

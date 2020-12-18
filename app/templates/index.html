@@ -3,10 +3,33 @@
 <html>
     <head>
         <title>{{ title }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/water.min.css') }}">
     </head>
     <body>
-        <p>Date: {{ weather.date }}</p>
-        <p>Temp: {{ weather.temperature }} C</p>
-        <p>Humidity: {{ weather.humidity }} %</p>
+
+        <h1>Garden Office Status</h1>
+
+        <h2>Climate</h2>
+        <div>
+            <p>Temp: {{ climate.temperature }} &#176;C</p>
+            <p>Humidity: {{ climate.humidity }} %</p>
+            <p>As of: {{ climate.date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        </div>
+
+        <h2>Lighting</h2>
+        <div>
+            <p>Lights: <a href="/lights?state={{ lights.state }}">{{ lights.state }}</a></p>
+            <p>Last on: {{ lights.on.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>Last off: {{ lights.off.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        </div>
+
+        <h2>Heating</h2>
+        <div>
+            <p>Heater: <a href="/heater?state={{ heater.state }}">{{ heater.state }}</a></p>
+            <p>Last on: {{ heater.on.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>Last off: {{ heater.off.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        </div>
+
     </body>
 </html>

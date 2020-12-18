@@ -1,16 +1,35 @@
 import RPi.GPIO as GPIO
 import time
 import sys
-import datetime
+from datetime import datetime
 import sqlite3
 
 import utils
 
 def message(address, conn):
-  now = datetime.datetime.utcnow().isoformat()
+  cur = conn.cursor()
+  # First bit is on/off, use this to check the Energie events table to get the current device state
+  cur.execute('SELECT address, MAX(messaged_on) FROM energie WHERE address IN (?, ?) GROUP BY address', ('0' + address[1:], '1' + address[1:]))
+  on = datetime(1, 1, 1)
+  off = datetime(1, 1, 1)
+  for event in cur.fetchall():
+    if event[0][0] == '0':
+      off = datetime.fromisoformat(event[1])
+    else:
+      on = datetime.fromisoformat(event[1])
+
+  if address[0] == '0' and off > on:
+    print('Already off')
+    return 1
+  elif address[0] == '1' and on > off:
+    print('Already on')
+    return 2
+
+  now = datetime.utcnow().isoformat()
   conn.execute('INSERT INTO energie (messaged_on, address) VALUES(?, ?)', (now, address))
   conn.commit()
   __energie(address)
+  return 0
 
 def __energie(address):
   '''Signal the Energie devices based on 4-bit address:
@@ -19,6 +38,8 @@ def __energie(address):
   Heat on:   1110
   Heat off:  0110
   '''
+  GPIO.setwarnings(False)
+
   # [BOARD, BCM (GPIO)]
   pins = [[11, 17], [13, 27], [15, 22], [16, 23], [18, 24], [22, 25]]
   BOARD = 0
@@ -57,7 +78,7 @@ def __energie(address):
 
   if loops >= 0:
     for i in range(loops):
-      print(i, bits[4*i : 4*i + 4])
+      # print(i, bits[4*i : 4*i + 4])
 
       # Set K0-K3
       GPIO.output(pins[0][mode], bits[4*i + 3])
@@ -72,6 +93,6 @@ def __energie(address):
 
 if __name__ == "__main__":
   conn = utils.get_conn()
-  message(sys.argv[1], conn)
+  if message(sys.argv[1], conn) == 0:
+    GPIO.cleanup()
   conn.close()
-  GPIO.cleanup()
