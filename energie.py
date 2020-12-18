@@ -1,8 +1,16 @@
 import RPi.GPIO as GPIO
 import time
 import sys
+import datetime
+import sqlite3
 
-def energie(address):
+def message(address, conn):
+  now = datetime.datetime.utcnow().isoformat()
+  conn.execute('INSERT INTO energie (messaged_on, address) VALUES(?, ?)', (now, address))
+  conn.commit()
+  __energie(address)
+
+def __energie(address):
   '''Signal the Energie devices based on 4-bit address:
   Light on:  1111
   Light off: 0111
@@ -61,5 +69,8 @@ def energie(address):
       GPIO.output(pins[5][mode], False) # 22 - Disable the modulator
 
 if __name__ == "__main__":
-  energie(sys.argv[1])
+  dbpath = '/var/log/raspberry-pi-experiments/data.db'
+  conn = sqlite3.connect(dbpath)
+  message(sys.argv[1], conn)
+  conn.close()
   GPIO.cleanup()

@@ -34,12 +34,13 @@ conn = sqlite3.connect(dbpath)
 
 if not initialised:
   conn.execute('CREATE TABLE climate (id INTEGER PRIMARY KEY AUTOINCREMENT, measured_on DATETIME, temperature FLOAT, humidity FLOAT)')
+  conn.execute('CREATE TABLE energie (id INTEGER PRIMARY KEY AUTOINCREMENT, messaged_on DATETIME, address TEXT)')
 
 conn.execute('INSERT INTO climate (measured_on, temperature, humidity) VALUES(?, ?, ?)', (now, temperature, humidity))
 conn.commit()
 
-conn.close()
-
 if temperature > 22:
   print('Warm, so heater off!', temperature)
-  energie.energie('0110')
+  energie.message('0110', conn)
+
+conn.close()
