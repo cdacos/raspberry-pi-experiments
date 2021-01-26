@@ -53,5 +53,11 @@ def toggle_switch(device_address):
     address = ('0' if current_state else '1') + device_address
     conn = utils.get_conn()
     energie.message(address, conn)
+
+    # Turning on the heating?
+    if address == '1110':
+        # When turning on the heating, turn on the lights
+        energie.message('1111', conn)
+
     conn.close()
     return redirect('/#' + address)
