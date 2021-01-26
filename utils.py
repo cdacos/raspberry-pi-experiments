@@ -2,7 +2,7 @@ import sqlite3
 import os.path
 
 def get_conn():
-    dbpath = '/var/log/raspberry-pi-experiments/data.db'
+    dbpath = '/mnt/media/data.db'
     initialised = os.path.isfile(dbpath)
 
     conn = sqlite3.connect(dbpath)
