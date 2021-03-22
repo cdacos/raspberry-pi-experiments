@@ -24,14 +24,18 @@ for i in range(0, 30):
     dht.exit()
     raise error
 
-now = datetime.datetime.utcnow().isoformat()
+now = datetime.datetime.utcnow()
 
 conn = utils.get_conn()
-conn.execute('INSERT INTO climate (measured_on, temperature, humidity) VALUES(?, ?, ?)', (now, temperature, humidity))
+conn.execute('INSERT INTO climate (measured_on, temperature, humidity) VALUES(?, ?, ?)', (now.isoformat(), temperature, humidity))
 conn.commit()
 
 if temperature > 22:
   print('Warm, so heater off!', temperature)
   energie.message('0110', conn)
+
+if now.hour >= 22 and now.minute < 1:
+  print('Late, so lights off?')
+  energie.message('0111', conn)
 
 conn.close()
