@@ -1,3 +1,5 @@
+import sys
+
 import RPi.GPIO as GPIO
 
 def led(state):
@@ -7,8 +9,8 @@ def led(state):
 
   try:
     GPIO.output(led, state)
-  finally:
-    GPIO.cleanup()
+  except:
+    pass
 
 if __name__ == "__main__":
   try:
