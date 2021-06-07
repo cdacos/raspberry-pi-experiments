@@ -9,7 +9,12 @@ def led(state):
 
   try:
     GPIO.output(led, state)
-  except:
+    if state:
+      print("On")
+    else:
+      print("Off")
+  except e:
+    print(e)
     pass
 
 if __name__ == "__main__":

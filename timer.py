@@ -3,6 +3,8 @@ import time
 import board
 import adafruit_dht
 
+import RPi.GPIO as GPIO
+
 import energie
 import utils
 
@@ -32,6 +34,10 @@ def record_climate(dht, conn, now):
 dht = adafruit_dht.DHT22(board.D3)
 recording_seconds = 0
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(26, GPIO.IN)
+last_switch_value = True
+
 while True:
   now = datetime.datetime.utcnow()
 
@@ -51,6 +57,12 @@ while True:
     recording_seconds = 0
   recording_seconds = recording_seconds + 1
 
-  
-   
+  # Lights physical switch. Look for toggle:
+  input_switch_value = GPIO.input(26)
+  if input_switch_value != last_switch_value:
+    # toggle energie lights
+    conn = utils.get_conn()
+    energie.message('0111', conn, toggle=True)
+  last_switch_value = input_switch_value
+
   time.sleep(1) # Loop every second

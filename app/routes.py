@@ -55,7 +55,8 @@ def toggle_switch(device_address):
     energie.message(address, conn)
 
     # Turning on the heating?
-    if address == '1110':
+    autoLightsEnabled = False
+    if autoLightsEnabled and address == '1110':
         # When turning on the heating, turn on the lights
         energie.message('1111', conn)
 

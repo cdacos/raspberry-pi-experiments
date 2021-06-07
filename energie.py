@@ -6,7 +6,7 @@ import sqlite3
 
 import utils
 
-def message(address, conn):
+def message(address, conn, toggle = False):
   cur = conn.cursor()
   # First bit is on/off, use this to check the Energie events table to get the current device state
   cur.execute('SELECT address, MAX(messaged_on) FROM energie WHERE address IN (?, ?) GROUP BY address', ('0' + address[1:], '1' + address[1:]))
@@ -18,12 +18,18 @@ def message(address, conn):
     else:
       on = datetime.fromisoformat(event[1])
 
-  if address[0] == '0' and off > on:
-    print('Already off')
-    return 1
-  elif address[0] == '1' and on > off:
-    print('Already on')
-    return 2
+  if toggle:
+    if address[0] == '0' and off > on:
+      address = '1' + address[1:]
+    elif address[0] == '1' and on > off:
+      address = '0' + address[1:]
+  else:
+    if address[0] == '0' and off > on:
+      print('Already off')
+      return 1
+    elif address[0] == '1' and on > off:
+      print('Already on')
+      return 2
 
   now = datetime.utcnow().isoformat()
   conn.execute('INSERT INTO energie (messaged_on, address) VALUES(?, ?)', (now, address))
