@@ -37,6 +37,7 @@ recording_seconds = 0
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(26, GPIO.IN)
 last_switch_value = True
+heater_off = False
 
 while True:
   now = datetime.datetime.utcnow()
@@ -45,12 +46,15 @@ while True:
     conn = utils.get_conn()
     temperature = record_climate(dht, conn, now)
 
-    if temperature > 22:
+    if not heater_off and temperature > 22:
       print('Warm, so heater off!', temperature)
       energie.message('0110', conn)
+      heater_off = True
+    elif heater_off and temperature < 22:
+      heater_off = False
 
     if now.hour >= 22 and now.minute < 1:
-      print('Late, so lights off?')
+      print('Late, so lights off!')
       energie.message('0111', conn)
 
     conn.close()
@@ -63,6 +67,9 @@ while True:
     # toggle energie lights
     conn = utils.get_conn()
     energie.message('0111', conn, toggle=True)
-  last_switch_value = input_switch_value
+    conn.execute('INSERT INTO log (created_on, message) VALUES(?, ?)', (now.isoformat(), 'Switch!'))
+    conn.commit()
+    conn.close()
+    last_switch_value = input_switch_value
 
   time.sleep(1) # Loop every second
