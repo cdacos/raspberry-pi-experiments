@@ -62,6 +62,27 @@ sudo systemctl start raspberry-pi-experiments-web
 sudo journalctl -u raspberry-pi-experiments-web -f
 ```
 
+## Troubleshooting
+
+Does only root have access to the GPIO?
+
+```
+ls -l /dev/gpiochip0
+ls -l /dev/mem
+ls -l /dev/gpiomem
+```
+
+Temporary fix:
+
+```
+sudo chown root.gpio /dev/gpiochip0
+sudo chown root.gpio /dev/mem
+sudo chown root.gpio /dev/gpiomem
+sudo chmod g+rw /dev/gpiochip0
+sudo chmod g+rw /dev/mem
+sudo chmod g+rw /dev/gpiomem
+```
+
 ## Hardware
 
 ![Raspberry Pi, DHT22, Pi-mote](docs/components.jpg)
