@@ -38,6 +38,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(26, GPIO.IN)
 last_switch_value = True
 heater_off = False
+heater_auto_off_level = 22
 
 while True:
   now = datetime.datetime.utcnow()
@@ -46,11 +47,11 @@ while True:
     conn = utils.get_conn()
     temperature = record_climate(dht, conn, now)
 
-    if not heater_off and temperature > 24:
+    if not heater_off and temperature > heater_auto_off_level:
       print('Warm, so heater off!', temperature)
       energie.message('0110', conn)
       heater_off = True
-    elif heater_off and temperature < 24:
+    elif heater_off and temperature < heater_auto_off_level:
       heater_off = False
 
     if now.hour >= 22 and now.minute < 1:
