@@ -11,6 +11,17 @@
 
         <h1>Garden Office</h1>
 
+	<table>
+	    <tr>
+	        <th>Lights</th>
+	        <th>Heater</th>
+	    </tr>
+	    <tr>
+                <td><a href="/lights?state={{ lights.state }}">{{ lights.state }}</a></td>
+		<td><a href="/heater?state={{ heater.state }}">{{ heater.state }}</a> <span style="float: right;">{{ climate.temperature }} &#176;C</span></td>
+	    </tr>
+	</table>
+
         <h2>Climate</h2>
         <div>
             <p>Temp: {{ climate.temperature }} &#176;C</p>
