@@ -46,11 +46,11 @@ while True:
     conn = utils.get_conn()
     temperature = record_climate(dht, conn, now)
 
-    if not heater_off and temperature > 22:
+    if not heater_off and temperature > 24:
       print('Warm, so heater off!', temperature)
       energie.message('0110', conn)
       heater_off = True
-    elif heater_off and temperature < 22:
+    elif heater_off and temperature < 24:
       heater_off = False
 
     if now.hour >= 22 and now.minute < 1:
