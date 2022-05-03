@@ -64,6 +64,8 @@ sudo journalctl -u raspberry-pi-experiments-web -f
 
 ## Troubleshooting
 
+(See udev rules as specified in 99-gpio_group.rules - might be the way of avoiding this?)
+
 Does only root have access to the GPIO?
 
 ```
