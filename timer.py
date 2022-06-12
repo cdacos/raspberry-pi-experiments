@@ -60,7 +60,7 @@ while True:
 
     conn.close()
     recording_seconds = 0
-  recording_seconds = recording_seconds + 1
+  recording_seconds = recording_seconds + 0.1
 
   # Lights physical switch. Look for toggle:
   input_switch_value = GPIO.input(26)
@@ -73,4 +73,4 @@ while True:
     conn.close()
     last_switch_value = input_switch_value
 
-  time.sleep(1) # Loop every second
+  time.sleep(0.1) # Loop every second
