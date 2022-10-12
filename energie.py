@@ -19,12 +19,14 @@ def message(instruction, toggle = False):
 
   office_state = utils.get_office_state()
 
+
   for s in office_state['devices']:
     if s['address'] == address:
-      if s['on'] != switch:
+      if s['on'] != switch or toggle:
+        instruction = instruction if not toggle else ('0' if s['on'] else '1') + address
+        __energie(instruction)
         now = datetime.utcnow()
         utils.post_device_state(now, address, switch)
-      __energie(address)
 
   return 0
 

@@ -4,7 +4,7 @@ import json
 import datetime
 from datetime import datetime
 
-root_url = "192.168.174.1:8070"
+root_url = "http://192.168.174.1:8070"
 
 def get_office_state():
     resp = requests.get(f'{root_url}/office')

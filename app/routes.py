@@ -37,14 +37,14 @@ def lights():
 def heater():
     return toggle_switch('110')
 
-def toggle_switch(device_address):
+def toggle_switch(address):
     current_state = request.args.get('state') == 'True' or False
-    address = ('0' if current_state else '1') + device_address
-    energie.message(address)
+    instruction = ('0' if current_state else '1') + address
+    energie.message(instruction)
 
     # Turning on the heating?
     autoLightsEnabled = False
-    if autoLightsEnabled and address == '1110':
+    if autoLightsEnabled and instruction == '1110':
         # When turning on the heating, turn on the lights
         energie.message('1111')
 
