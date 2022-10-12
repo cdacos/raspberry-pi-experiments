@@ -1,40 +1,31 @@
-import RPi.GPIO as GPIO
 import time
+import datetime
 import sys
 from datetime import datetime
-import sqlite3
 
 import utils
 
-def message(address, conn, toggle = False):
-  cur = conn.cursor()
+try:
+  import RPi.GPIO as GPIO
+  IS_A_PI = True
+except:
+  print('not a raspberry pi')
+  IS_A_PI = False
+
+def message(instruction, toggle = False):
   # First bit is on/off, use this to check the Energie events table to get the current device state
-  cur.execute('SELECT address, MAX(messaged_on) FROM energie WHERE address IN (?, ?) GROUP BY address', ('0' + address[1:], '1' + address[1:]))
-  on = datetime(1, 1, 1)
-  off = datetime(1, 1, 1)
-  for event in cur.fetchall():
-    if event[0][0] == '0':
-      off = datetime.fromisoformat(event[1])
-    else:
-      on = datetime.fromisoformat(event[1])
+  address = instruction[1:]
+  switch = instruction[0] == '1'
 
-  if toggle:
-    if address[0] == '0' and off > on:
-      address = '1' + address[1:]
-    elif address[0] == '1' and on > off:
-      address = '0' + address[1:]
-  else:
-    if address[0] == '0' and off > on:
-      print('Already off')
-      return 1
-    elif address[0] == '1' and on > off:
-      print('Already on')
-      return 2
+  office_state = utils.get_office_state()
 
-  now = datetime.utcnow().isoformat()
-  conn.execute('INSERT INTO energie (messaged_on, address) VALUES(?, ?)', (now, address))
-  conn.commit()
-  __energie(address)
+  for s in office_state['devices']:
+    if s['address'] == address:
+      if s['on'] != switch:
+        now = datetime.utcnow()
+        utils.post_device_state(now, address, switch)
+      __energie(address)
+
   return 0
 
 def __energie(address):
@@ -44,6 +35,9 @@ def __energie(address):
   Heat on:   1110
   Heat off:  0110
   '''
+  if not IS_A_PI:
+    return
+
   GPIO.setwarnings(False)
 
   # [BOARD, BCM (GPIO)]
@@ -98,7 +92,5 @@ def __energie(address):
       GPIO.output(pins[5][mode], False) # 22 - Disable the modulator
 
 if __name__ == "__main__":
-  conn = utils.get_conn()
-  if message(sys.argv[1], conn) == 0:
+  if message(sys.argv[1]) == 0:
     GPIO.cleanup()
-  conn.close()

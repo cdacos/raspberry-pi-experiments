@@ -26,21 +26,19 @@
         <div>
             <p>Temp: {{ climate.temperature }} &#176;C</p>
             <p>Humidity: {{ climate.humidity }} %</p>
-            <p>As of: {{ climate.date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>As of: {{ climate.measured_on }}</p>
         </div>
 
         <h2>Lighting</h2>
         <div>
             <p>Lights: <a href="/lights?state={{ lights.state }}">{{ lights.state }}</a></p>
-            <p>Last on: {{ lights.on.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-            <p>Last off: {{ lights.off.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>Last switch: {{ lights.event_date }}</p>
         </div>
 
         <h2>Heating</h2>
         <div>
             <p>Heater: <a href="/heater?state={{ heater.state }}">{{ heater.state }}</a></p>
-            <p>Last on: {{ heater.on.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-            <p>Last off: {{ heater.off.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>Last switch: {{ heater.event_date }}</p>
         </div>
 
     </body>
