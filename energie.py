@@ -73,7 +73,7 @@ def __energie(address):
 
   if address[1:] == '111':
     print(address[1:], address[0] == '1')
-    GPIO.output(pins[6][mode], address[0] == '1') # LED
+    GPIO.output(pins[6][mode], address[0] == '0') # LED - when lights are off, LED is on!
 
   GPIO.output(pins[5][mode], False)  # 22 - Disable the modulator by setting CE pin lo
 
