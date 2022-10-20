@@ -3,6 +3,7 @@
 
 import RPi.GPIO as GPIO
 import time
+from time import gmtime, strftime
 
 GPIO.setmode(GPIO.BOARD) #Set GPIO to pin numbering
 pir = 8 #Assign pin 8 to PIR
@@ -17,9 +18,9 @@ print ("Press Ctrl+c to end program")
 try:
   while True:
     if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
-      print ("Motion Detected!")
+      print ("Motion Detected!", strftime("%Y-%m-%d %H:%M:%S", gmtime()))
       GPIO.output(led, True) #Turn on LED
-      time.sleep(4) #Keep LED on for 4 seconds
+      time.sleep(1) #Keep LED on for 4 seconds
       GPIO.output(led, False) #Turn off LED
       time.sleep(0.1)
 

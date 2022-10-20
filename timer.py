@@ -33,7 +33,8 @@ def record_climate(dht, now):
         dht.exit()
       raise error
 
-  utils.post_climate(now, temperature, humidity)
+  if temperature > -999 and humidity > -999:
+    utils.post_climate(now, temperature, humidity)
 
   return temperature
 
@@ -49,6 +50,7 @@ recording_seconds = 0
 last_switch_value = True
 heater_off = False
 heater_auto_off_level = 22
+first_run = True
 
 while True:
   now = datetime.utcnow()
@@ -76,10 +78,17 @@ while True:
   else:
     input_switch_value = 0
 
+  if first_run:
+    print('Switch is currently', input_switch_value)
+    last_switch_value = input_switch_value
+
   if input_switch_value != last_switch_value:
     # toggle energie lights
+    print('Switch!', input_switch_value)
     energie.message('0111', toggle=True)
     utils.post_log(now, 'Switch!')
     last_switch_value = input_switch_value
+
+  first_run = False
 
   time.sleep(0.1) # Loop every second

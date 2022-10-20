@@ -19,14 +19,15 @@ def message(instruction, toggle = False):
 
   office_state = utils.get_office_state()
 
-
   for s in office_state['devices']:
     if s['address'] == address:
       if s['on'] != switch or toggle:
+        print("a", instruction)
         instruction = instruction if not toggle else ('0' if s['on'] else '1') + address
+        print("b", instruction)
         __energie(instruction)
         now = datetime.utcnow()
-        utils.post_device_state(now, address, switch)
+        utils.post_device_state(now, instruction[1:], instruction[0] == '1')
 
   return 0
 
@@ -43,7 +44,7 @@ def __energie(address):
   GPIO.setwarnings(False)
 
   # [BOARD, BCM (GPIO)]
-  pins = [[11, 17], [13, 27], [15, 22], [16, 23], [18, 24], [22, 25]]
+  pins = [[11, 17], [13, 27], [15, 22], [16, 23], [18, 24], [22, 25], [10, 15]]
   BOARD = 0
   BCM = 1
 
@@ -58,6 +59,7 @@ def __energie(address):
     print('Uknown mode: ', mode)
     exit(1)
 
+
   # Select the GPIO pins used for the encoder K0-K3 data inputs
   GPIO.setup(pins[0][mode], GPIO.OUT) # 11
   GPIO.setup(pins[2][mode], GPIO.OUT) # 15
@@ -66,6 +68,12 @@ def __energie(address):
 
   GPIO.setup(pins[4][mode], GPIO.OUT) # 18 - Select the signal to select ASK/FSK
   GPIO.setup(pins[5][mode], GPIO.OUT) # 22 - Select the signal used to enable/disable the modulator
+
+  GPIO.setup(pins[6][mode], GPIO.OUT) # 10 - LED
+
+  if address[1:] == '111':
+    print(address[1:], address[0] == '1')
+    GPIO.output(pins[6][mode], address[0] == '1') # LED
 
   GPIO.output(pins[5][mode], False)  # 22 - Disable the modulator by setting CE pin lo
 
