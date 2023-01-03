@@ -49,7 +49,7 @@ if IS_A_PI:
 recording_seconds = 0
 last_switch_value = True
 heater_off = False
-heater_auto_off_level = 22
+heater_auto_off_level = 24
 first_run = True
 
 while True:
