@@ -1,34 +1,34 @@
-import RPi.GPIO as GPIO
 import time
+import datetime
 import sys
 from datetime import datetime
-import sqlite3
 
 import utils
 
-def message(address, conn):
-  cur = conn.cursor()
+try:
+  import RPi.GPIO as GPIO
+  IS_A_PI = True
+except:
+  print('not a raspberry pi')
+  IS_A_PI = False
+
+def message(instruction, toggle = False):
   # First bit is on/off, use this to check the Energie events table to get the current device state
-  cur.execute('SELECT address, MAX(messaged_on) FROM energie WHERE address IN (?, ?) GROUP BY address', ('0' + address[1:], '1' + address[1:]))
-  on = datetime(1, 1, 1)
-  off = datetime(1, 1, 1)
-  for event in cur.fetchall():
-    if event[0][0] == '0':
-      off = datetime.fromisoformat(event[1])
-    else:
-      on = datetime.fromisoformat(event[1])
+  address = instruction[1:]
+  switch = instruction[0] == '1'
 
-  if address[0] == '0' and off > on:
-    print('Already off')
-    return 1
-  elif address[0] == '1' and on > off:
-    print('Already on')
-    return 2
+  office_state = utils.get_office_state()
 
-  now = datetime.utcnow().isoformat()
-  conn.execute('INSERT INTO energie (messaged_on, address) VALUES(?, ?)', (now, address))
-  conn.commit()
-  __energie(address)
+  for s in office_state['devices']:
+    if s['address'] == address:
+      if s['on'] != switch or toggle:
+        print("a", instruction)
+        instruction = instruction if not toggle else ('0' if s['on'] else '1') + address
+        print("b", instruction)
+        __energie(instruction)
+        now = datetime.utcnow()
+        utils.post_device_state(now, instruction[1:], instruction[0] == '1')
+
   return 0
 
 def __energie(address):
@@ -38,10 +38,13 @@ def __energie(address):
   Heat on:   1110
   Heat off:  0110
   '''
+  if not IS_A_PI:
+    return
+
   GPIO.setwarnings(False)
 
   # [BOARD, BCM (GPIO)]
-  pins = [[11, 17], [13, 27], [15, 22], [16, 23], [18, 24], [22, 25]]
+  pins = [[11, 17], [13, 27], [15, 22], [16, 23], [18, 24], [22, 25], [10, 15]]
   BOARD = 0
   BCM = 1
 
@@ -56,6 +59,7 @@ def __energie(address):
     print('Uknown mode: ', mode)
     exit(1)
 
+
   # Select the GPIO pins used for the encoder K0-K3 data inputs
   GPIO.setup(pins[0][mode], GPIO.OUT) # 11
   GPIO.setup(pins[2][mode], GPIO.OUT) # 15
@@ -64,6 +68,12 @@ def __energie(address):
 
   GPIO.setup(pins[4][mode], GPIO.OUT) # 18 - Select the signal to select ASK/FSK
   GPIO.setup(pins[5][mode], GPIO.OUT) # 22 - Select the signal used to enable/disable the modulator
+
+  GPIO.setup(pins[6][mode], GPIO.OUT) # 10 - LED
+
+  if address[1:] == '111':
+    print(address[1:], address[0] == '1')
+    GPIO.output(pins[6][mode], address[0] == '0') # LED - when lights are off, LED is on!
 
   GPIO.output(pins[5][mode], False)  # 22 - Disable the modulator by setting CE pin lo
 
@@ -92,7 +102,5 @@ def __energie(address):
       GPIO.output(pins[5][mode], False) # 22 - Disable the modulator
 
 if __name__ == "__main__":
-  conn = utils.get_conn()
-  if message(sys.argv[1], conn) == 0:
+  if message(sys.argv[1]) == 0:
     GPIO.cleanup()
-  conn.close()

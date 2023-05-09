@@ -62,6 +62,31 @@ sudo systemctl start raspberry-pi-experiments-web
 sudo journalctl -u raspberry-pi-experiments-web -f
 ```
 
+## Troubleshooting
+
+(See udev rules as specified in 99-gpio_group.rules - might be the way of avoiding this?)
+
+Does only root have access to the GPIO?
+
+```
+ls -l /dev/gpiochip0
+ls -l /dev/mem
+ls -l /dev/gpiomem
+```
+
+Temporary fix:
+
+```
+sudo chown root.gpio /dev/gpiochip0
+sudo chown root.gpio /dev/mem
+sudo chown root.gpio /dev/gpiomem
+sudo chown root.gpio /dev/spidev*
+sudo chmod g+rw /dev/gpiochip0
+sudo chmod g+rw /dev/mem
+sudo chmod g+rw /dev/gpiomem
+sudo chmod g+rw /dev/spidev*
+```
+
 ## Hardware
 
 ![Raspberry Pi, DHT22, Pi-mote](docs/components.jpg)
@@ -71,3 +96,12 @@ Note: The mapping of BCM to BOARD pin references was thanks to this great site: 
 The Adafruit Python library sets the GPIO mode to BCM and it's not possible to change the mode once set in a process. The Energenie Pi-mote's code has been updated to support both.
 
 ![GPIO](docs/gpio.jpg)
+
+## Upgrading Python dependencies
+
+```
+sed -i '' 's/[~=]=/>=/' requirements.txt
+pip install -U -r requirements.txt
+pip freeze | sed 's/==/~=/' > requirements.txt
+```
+

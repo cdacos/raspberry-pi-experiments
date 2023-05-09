@@ -5,30 +5,45 @@
         <title>{{ title }}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{ url_for('static', filename = 'css/water.min.css') }}">
+        <meta http-equiv="refresh" content="60" />
     </head>
     <body>
 
-        <h1>Garden Office Status</h1>
+        <h1>Garden Office</h1>
+
+	<table>
+	    <tr>
+	        <th>Lights</th>
+	        <th>Heater</th>
+	    </tr>
+	    <tr>
+                <td><a href="/lights?state={{ lights.state }}">{{ lights.state }}</a></td>
+		<td><a href="/heater?state={{ heater.state }}">{{ heater.state }}</a> <span style="float: right;">{{ climate.temperature }} &#176;C</span></td>
+	    </tr>
+	</table>
+
+	<div>
+	    <a href="http://192.168.173.20:8081">Camera Stream (motion)</a><br>
+	    <img loading="lazy" src="http://192.168.173.20:8081/0/stream" width="25%">
+	</div>
 
         <h2>Climate</h2>
         <div>
             <p>Temp: {{ climate.temperature }} &#176;C</p>
             <p>Humidity: {{ climate.humidity }} %</p>
-            <p>As of: {{ climate.date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>As of: {{ climate.measured_on }}</p>
         </div>
 
         <h2>Lighting</h2>
         <div>
             <p>Lights: <a href="/lights?state={{ lights.state }}">{{ lights.state }}</a></p>
-            <p>Last on: {{ lights.on.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-            <p>Last off: {{ lights.off.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>Last switch: {{ lights.event_date }}</p>
         </div>
 
         <h2>Heating</h2>
         <div>
             <p>Heater: <a href="/heater?state={{ heater.state }}">{{ heater.state }}</a></p>
-            <p>Last on: {{ heater.on.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-            <p>Last off: {{ heater.off.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p>Last switch: {{ heater.event_date }}</p>
         </div>
 
     </body>
