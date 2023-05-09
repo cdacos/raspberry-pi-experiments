@@ -96,3 +96,12 @@ Note: The mapping of BCM to BOARD pin references was thanks to this great site: 
 The Adafruit Python library sets the GPIO mode to BCM and it's not possible to change the mode once set in a process. The Energenie Pi-mote's code has been updated to support both.
 
 ![GPIO](docs/gpio.jpg)
+
+## Upgrading Python dependencies
+
+```
+sed -i '' 's/[~=]=/>=/' requirements.txt
+pip install -U -r requirements.txt
+pip freeze | sed 's/==/~=/' > requirements.txt
+```
+
