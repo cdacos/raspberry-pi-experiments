@@ -51,6 +51,7 @@ last_switch_value = True
 heater_off = False
 heater_auto_off_level = 24
 first_run = True
+hammer_switch_count = 0
 
 while True:
   now = datetime.utcnow()
@@ -65,9 +66,9 @@ while True:
     elif heater_off and temperature < heater_auto_off_level:
       heater_off = False
 
-    if now.hour >= 22 and now.minute < 1:
-      print('Late, so lights off!')
-      energie.message('0111')
+    #if now.hour >= 22 and now.minute < 1:
+    #  print('Late, so lights off!')
+    #  energie.message('0111')
 
     recording_seconds = 0
   recording_seconds = recording_seconds + 0.1
@@ -87,7 +88,11 @@ while True:
     print('Switch!', input_switch_value)
     energie.message('0111', toggle=True)
     utils.post_log(now, 'Switch!')
-    last_switch_value = input_switch_value
+    if hammer_switch_count > 10:
+      last_switch_value = input_switch_value
+      hammer_switch_count = 0
+    else:
+      hammer_switch_count = hammer_switch_count + 1
 
   first_run = False
 
